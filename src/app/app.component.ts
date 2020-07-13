@@ -7,21 +7,76 @@ import {FileService} from '../app/services/file.service'
 })
 export class AppComponent {
   title = 'FP';
+  ran:boolean=false;
+  retrievedData:any[]=[]
   fileToUpload: File = null;
   lu:boolean=false
+  dataUrl:string | ArrayBuffer=""
+  Obj:any=[];
+  
+  load:boolean=false;
+
+  file: File;
+  fileName:string;
+  imageUrl: string | ArrayBuffer;
+
   constructor(private fs:FileService){
 
   }
-  handleFileInput(files:FileList){
+  
+
+  onChange(file:File){
+    console.log("called")
+    const reader = new FileReader();
+    this.fileToUpload = file;
+    reader.onload = () => {
+      let text:any = reader.result;      
+      var lines = text.split("\n");
+
+    var result = [];
+
+    var headers:string[]= lines[0].split(",");
+      
+    for (var i = 1; i < lines.length-1; i++) {
+
+        var obj:any = {};
+        var currentline = lines[i].split(",");
+        var  j;
+        for (j = 0; j < headers.length; j++) {
+            obj[headers[j]] = currentline[j];
+        }
+       
+        result.push(obj);
+
+    }
+    this.Obj=result;
+    console.log(this.Obj)
+      //var json = this.csvJSON(text);
+    };
+    reader.readAsText(this.fileToUpload)
     
-    this.fileToUpload = files.item(0);
-    
-  }
+  }   
+
+
   upload(){
-    console.log(this.fileToUpload)
-    const formdata=new FormData;
-    formdata.append('filekey',this.fileToUpload,"ThIsisme")
-    console.log(formdata);
-    this.fs.upload(this.fileToUpload)
-  }
+      this.fs.upload(this.Obj).subscribe((result)=>{
+            console.log("Uploaded")
+      },(err)=>{ console.log("error in uploading")  })
+      document.forms[0].reset()
+  } 
+
+run(){
+  this.load=true
+    this.fs.run().subscribe((res)=>{
+        console.log(res," Runn success ")
+        this.load=false
+        this.ran=true
+    })
+}
+
+getResults(){
+      
+}
+
+
 }

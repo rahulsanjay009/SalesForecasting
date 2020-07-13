@@ -1,26 +1,22 @@
 import { Injectable} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class FileService {
-  testObject={
-      name:'string',
-      place:'string',
-      wtf:'what the fcuk'
-  }
+  testObject:any={}
   constructor(private httpClient:HttpClient) { }
-  upload(file:File){
-    const endpoint = 'http://localhost:3000/api/uploads';
-    const formData: FormData = new FormData();
-    formData.append('fileKey', file, file.name);
-    console.log(" Upload from ts ");
-    return this.httpClient
-      .post(endpoint, file).subscribe(()=>{},()=>{  console.log("error raised")  })
+  upload(Obj):Observable<any>{
+    console.log("file service  upload..." )  
+    return this.httpClient.post('/upload',Obj);
+      
   }
-
-  test(){
+  test(Obj){
       console.log("test called")
-      return this.httpClient.post('http://localhost:3000/api/uploads',this.testObject).subscribe(()=>{},()=>{  console.log("error raised")  })
+      return this.httpClient.post('/api/test',Obj).subscribe(()=>{},()=>{  console.log("error raised")  })
+  }
+  run(){
+      return this.httpClient.get('/runMain',{responseType:'text'});
   }
 }

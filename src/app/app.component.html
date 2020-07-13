@@ -1,7 +1,7 @@
-  <h3 class="text-center text"> FOOD SALES PREDICTION </h3>
+  <h3 class="text-center text"> FOOD SALES FORECAST </h3>
 <div class="row mb-5">
 
-  <div class="col-md-6 mb-4 mb-md-0" style="padding:5%; margin-top:5%">
+  <div class="col-md-6 mb-4 mb-md-0" style="padding:5%; ">
 
     <!--Zoom effect-->
     <div class="view zoom">
@@ -12,21 +12,24 @@
     </div>
 
   </div>
-  <div class="col-md-6 mb-4 mb-md-0 flex-center" style="padding:5%; margin-top:10%">
+  <div class="col-md-6 mb-4 mb-md-0 flex-center" style="padding:5%; margin-top:2%">
     <form  style="width: 100%;" >
       <div class="custom-file form-group">
-        <input type="file" class="custom-file-input" id="customFile" (change)="handleFileInput($event.target.files)">
+        
+        <input type="file" class="custom-file-input"  (input)="onChange(f.files[0])" #f>
         <label class="custom-file-label" for="customFile">Choose file</label>
       </div>
       <p class="text-danger" style="font-size: smaller; text-align: center;"> * Upload files with .csv extension only </p>
       <br>
       <div class="form-group" align=center>
         <input type="button" class="btn sunny-morning-gradient" (click)="upload()" value="UPLOAD">
-        <button class="btn tempting-azure-gradient"> RUN  </button>
-      </div>
-     
-    </form> 
-    
-    
+        <input type="button" class="btn tempting-azure-gradient" (click)="run()" value="RUN">
+      </div> <br>
+      <div class="form-group " align=center>
+        <div class="spinner-border" role="status" *ngIf="load" style="margin-top:3%; margin-left:5%; height:3rem; width:3rem">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>  
+    </form>     
   </div>
   </div>
