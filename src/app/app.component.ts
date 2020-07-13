@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
 import {FileService} from '../app/services/file.service'
+import { ChildActivationStart } from '@angular/router';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  floor=Math.floor
+  uploaded:boolean=false;
   title = 'FP';
   ran:boolean=false;
   retrievedData:any[]=[]
@@ -26,9 +29,10 @@ export class AppComponent {
   
 
   onChange(file:File){
-    console.log("called")
     const reader = new FileReader();
     this.fileToUpload = file;
+    console.log("called",this.fileToUpload.name.split('.')[0])
+   
     reader.onload = () => {
       let text:any = reader.result;      
       var lines = text.split("\n");
@@ -59,23 +63,33 @@ export class AppComponent {
 
 
   upload(){
-      this.fs.upload(this.Obj).subscribe((result)=>{
-            console.log("Uploaded")
-      },(err)=>{ console.log("error in uploading")  })
-      document.forms[0].reset()
+    this.load=true
+      this.fs.upload(this.Obj,this.fileToUpload.name.split('.')[0]).subscribe((result)=>{
+            this.load=false;
+            this.uploaded=true
+      })
+      
   } 
 
 run(){
   this.load=true
-    this.fs.run().subscribe((res)=>{
-        console.log(res," Runn success ")
-        this.load=false
-        this.ran=true
-    })
+    this.fs.run(this.fileToUpload.name.split('.')[0]).subscribe((res)=>{
+        console.log(res)
+    },(err)=>{ console.log("err") },()=>{ this.load=false; this.ran=true })
 }
 
 getResults(){
-      
+  console.log("get reulsts called")
+      this.fs.getResult(this.fileToUpload.name.split('.')[0]).subscribe((data)=>{
+          if(data['message']=='success'){
+              this.retrievedData=data['data'];
+              this.retrievedData
+              console.log(this.retrievedData)
+          }
+          else{
+            console.log(data);
+          }
+      })
 }
 
 

@@ -3,7 +3,8 @@ const mongoClient=require('mongodb').MongoClient;
 const app=express()
 const path = require('path')
 const controller=require('./controller')
-const bodyParser=require('body-parser')
+const bodyParser=require('body-parser');
+const { exec } = require('child_process');
 app.use(express.static(path.join(__dirname,"../../dist/FP")));
 
 app.use(bodyParser.json({
@@ -13,19 +14,22 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 //app.use('/api',controller)
-
 app.post('/upload',(req,res,next)=>{  
       let dbo=app.locals.dbObject.db('FP');
-      console.log("bu hahaha",req.body)
-      dbo.collection('CSVS').insertMany(req.body,(err,success)=>{
+      console.log("bu hahaha",req.body[0],req.body[1])
+      
+      
+      dbo.collection('CSVS'+req.body[0]).insertMany(req.body[1],(err,success)=>{
             if(err){
-                console.log("error",err)
+                next(err)
             }
-            else
-              console.log("success",success)
+            res.send({message:"success"})
+              
       })
 })
-app.get('/runMain',(req,res)=>{
+
+
+app.post('/runMain',(req,res)=>{
   var spawn = require("child_process").spawn; 
   console.log("main buhahaha")
   // Parameters passed in spawn - 
@@ -35,12 +39,38 @@ app.get('/runMain',(req,res)=>{
     
   // E.g : http://localhost:3000/name?firstname=Mike&lastname=Will 
   // so, first name = Mike and last name = Will 
-  var process = spawn('python',["./main.py"] ); 
- 
-  process.stdout.on('data', function(data) { 
-      res.send(data.toString()); 
-  }) 
+  var x=res
+  exec("python main.py "+req.body.name,(err,res)=>{
+        if(!err){
+            x.send("end")
+        }
+        else{
+          x.send("error")
+        }
+  })
 
+  /*
+  var process = spawn('python',["./main.py",req.body.name] ); 
+  var da
+  process.stdout.on('data', function(data) { 
+        res.send(data.toString())
+  }) 
+  process.stdout.on('exit',()=>{
+        res.send("end")
+  }) */
+})
+
+app.post("/getResult",(req,res)=>{
+  let dbo=app.locals.dbObject.db('FP');
+  console.log("getResult buhahaha",req.body.name)
+  dbo.collection("predictions"+req.body.name).find({}).toArray((err,obj)=>{
+      if(err){
+          next(err)
+      }
+      else{
+          res.send({message:'success',data:obj})
+      }
+  })
 })
 
 app.use((req,res,next)=>{
