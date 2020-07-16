@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {FileService} from '../app/services/file.service'
-import { ChildActivationStart } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog'
+import { InstructionsComponent } from './instructions/instructions.component';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -23,12 +24,13 @@ export class AppComponent {
   fileName:string;
   imageUrl: string | ArrayBuffer;
 
-  constructor(private fs:FileService){
+  constructor(private fs:FileService,public dialog:MatDialog){
 
   }
   
 
   onChange(file:File){
+    this.Obj=[]
     const reader = new FileReader();
     this.fileToUpload = file;
     console.log("called",this.fileToUpload.name.split('.')[0])
@@ -74,11 +76,12 @@ export class AppComponent {
 run(){
   this.load=true
     this.fs.run(this.fileToUpload.name.split('.')[0]).subscribe((res)=>{
-        console.log(res)
-    },(err)=>{ console.log("err") },()=>{ this.load=false; this.ran=true })
+        console.log("res",res)        
+    },(err)=>{ console.log(err); this.load=false; this.ran=true },()=>{ this.load=false; this.ran=true })
 }
 
 getResults(){
+  this.retrievedData=[]
   console.log("get reulsts called")
       this.fs.getResult(this.fileToUpload.name.split('.')[0]).subscribe((data)=>{
           if(data['message']=='success'){
@@ -92,5 +95,10 @@ getResults(){
       })
 }
 
+
+demo(){
+    const ref=this.dialog.open(InstructionsComponent)
+    
+}
 
 }

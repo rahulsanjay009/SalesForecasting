@@ -4,7 +4,8 @@ const app=express()
 const path = require('path')
 const controller=require('./controller')
 const bodyParser=require('body-parser');
-const { exec } = require('child_process');
+const  exec  = require('child_process').exec;
+
 app.use(express.static(path.join(__dirname,"../../dist/FP")));
 
 app.use(bodyParser.json({
@@ -13,9 +14,11 @@ app.use(bodyParser.json({
 app.use(bodyParser.urlencoded({
   extended: false
 }));
+
 //app.use('/api',controller)
 app.post('/upload',(req,res,next)=>{  
       let dbo=app.locals.dbObject.db('FP');
+      console.log("upload buhahaha")
       console.log("bu hahaha",req.body[0],req.body[1])
       
       
@@ -31,7 +34,7 @@ app.post('/upload',(req,res,next)=>{
 
 app.post('/runMain',(req,res)=>{
   var spawn = require("child_process").spawn; 
-  console.log("main buhahaha")
+  console.log("main buhahaha",req.body.name)
   // Parameters passed in spawn - 
   // 1. type_of_script 
   // 2. list containing Path of the script 
@@ -40,13 +43,12 @@ app.post('/runMain',(req,res)=>{
   // E.g : http://localhost:3000/name?firstname=Mike&lastname=Will 
   // so, first name = Mike and last name = Will 
   var x=res
-  exec("python main.py "+req.body.name,(err,res)=>{
-        if(!err){
-            x.send("end")
+  exec("python main.py "+req.body.name,(err,stdout,stderr)=>{
+        if(err){
+            next(err)
         }
-        else{
-          x.send("error")
-        }
+        console.log("stdout",stdout)
+        console.log("stderr",stderr)
   })
 
   /*
@@ -82,10 +84,10 @@ mongoClient.connect("mongodb+srv://Admin:Admin@cluster0-q4yrs.mongodb.net/FP/CSV
                 console.log("Conntected to Mongo !")
                 const port =  3000;
                 app.locals.dbObject=client;
-                app.listen(port,()=>{
+                const server=app.listen(port,()=>{
                         console.log("server listening on "+port)
                 })
-
+                server.setTimeout(1200000)
 
         }
         else{

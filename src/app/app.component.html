@@ -14,6 +14,9 @@
   </div>
   <div class="col-md-6 mb-4 mb-md-0 flex-center" style="padding:5%; margin-top:2%">
     <form  style="width: 100%;" >
+      <div class="form-group">
+          <span> please view a <input class="btn btn-sm" type="button" (click)="demo()" value="Demo File"> before upload </span>
+      </div>
       <div class="custom-file form-group">
         
         <input type="file" class="custom-file-input"  (input)="onChange(f.files[0])" #f>
@@ -22,8 +25,10 @@
       <p class="text-danger" style="font-size: smaller; text-align: center;" *ngIf="!uploaded"> * Upload files with .csv extension only </p>
       <br>
       <div class="form-group" align=center>
-        <input type="button" class="btn sunny-morning-gradient" (click)="upload()" [value]="uploaded?'UPLOADED':'UPLOAD'" [disabled]="uploaded">
-        <input type="button" class="btn tempting-azure-gradient" (click)="run()" value="RUN">
+        <input class="btn sunny-morning-gradient" type="button" (click)="upload()" [value]="uploaded?'UPLOADED':'UPLOAD'" [disabled]="uploaded">
+          
+        
+        <input type="button" class="btn tempting-azure-gradient waves-effect waves-dark" (click)="run()" value="RUN">
       </div> <br>
       <div class="form-group " align=center>
         <div class="spinner-border" role="status" *ngIf="load" style="margin-top:3%; margin-left:5%; height:3rem; width:3rem">
